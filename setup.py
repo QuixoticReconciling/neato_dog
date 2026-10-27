@@ -24,6 +24,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'fetch = neato_dog.fetch:main',
+            'sit = neato_dog.sit:main',
         ],
     },
 )
