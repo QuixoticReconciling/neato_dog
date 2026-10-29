@@ -64,7 +64,7 @@ class Fetch(Node):
             )
 
         moments = cv2.moments(self.binary_image, binaryImage=True)
-
+        # 'm00' represents all points, 'm10' represents all x points 'm01' represents all y points
         if moments['m00'] != 0:
             self.center_x, self.center_y = moments['m10']/moments['m00'], moments['m01']/moments['m00']
             self.norm_x_pose = (self.center_x - self.cv_image.shape[1]/2) / self.cv_image.shape[1]
