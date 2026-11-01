@@ -22,10 +22,10 @@ def is_open_hand(hand_landmarks):
         True if the hand is open, False otherwise.
     """
     finger_tips = [8, 12, 16, 20] #doesn't include the thumb bc we only want to check height in y
-    finger_dips = [6, 10, 14, 18] #lower landmarks so there's more room for error
+    finger_pips = [6, 10, 14, 18] #lower landmarks so there's more room for error
 
-    for tip, dip in zip(finger_tips, finger_dips):
-        if hand_landmarks.landmark[tip].y > hand_landmarks.landmark[dip].y:
+    for tip, pip in zip(finger_tips, finger_pips):
+        if hand_landmarks.landmark[tip].y > hand_landmarks.landmark[pip].y:
             return False
     return True
 
@@ -60,11 +60,18 @@ def is_peace_sign(hand_landmarks):
         True if the hand is making a peace sign gesture, False otherwise.
     """
     index_finger_tip = 8
-    index_finger_dip = 6
+    index_finger_pip = 6
     middle_finger_tip = 12
-    middle_finger_dip = 10
+    middle_finger_pip = 10
+    ring_finger_tip = 16
+    ring_finger_pip = 14
+    pinky_finger_tip = 20
+    pinky_finger_pip = 18
 
-    if hand_landmarks.landmark[index_finger_tip].y < hand_landmarks.landmark[index_finger_dip].y and \
-       hand_landmarks.landmark[middle_finger_tip].y < hand_landmarks.landmark[middle_finger_dip].y:
+
+    if hand_landmarks.landmark[index_finger_tip].y < hand_landmarks.landmark[index_finger_pip].y and \
+       hand_landmarks.landmark[middle_finger_tip].y < hand_landmarks.landmark[middle_finger_pip].y and \
+        hand_landmarks.landmark[ring_finger_tip].y > hand_landmarks.landmark[ring_finger_pip].y and \
+        hand_landmarks.landmark[pinky_finger_tip].y > hand_landmarks.landmark[pinky_finger_pip].y:
         return True
     return False
