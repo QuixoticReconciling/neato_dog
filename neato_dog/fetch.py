@@ -81,6 +81,7 @@ class Fetch(Node):
 
         while True:
             self.run_loop()
+
             time.sleep(0.1)
 
     # def process_mouse_event(self, event, x,y,flags,param):
@@ -107,7 +108,7 @@ class Fetch(Node):
     def run_loop(self):
         """ Main loop for processing images and controlling the Neato through the CV interface."""
         # NOTE: only do cv2.imshow and cv2.waitKey in this function 
-        if not self.cv_image is None or self.binary_image is None:
+        if self.cv_image is None or self.binary_image is None:
             return
             # computes the moments of the binary image and use them to find the center of the ball
         if  self.shape_found.is_set():
