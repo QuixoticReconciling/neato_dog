@@ -26,6 +26,9 @@ setup(
         'console_scripts': [
             'fetch = neato_dog.fetch:main',
             'sit = neato_dog.sit:main',
+            'YOLO_fetch = neato_dog.YOLO_fetch:main',
+            'spin = neato_dog.spin:main',
+            'finite_state_machine = neato_dog.finite_state_machine:main'
         ],
     },
 )
