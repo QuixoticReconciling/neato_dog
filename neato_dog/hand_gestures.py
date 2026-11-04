@@ -31,7 +31,7 @@ def is_open_hand(hand_landmarks):
 
 def is_zero(hand_landmarks):
     """
-    Check if the hand is making a zero gesture with the thumb and middle finger touching.
+    Check if the hand is making a zero gesture with a fist
 
     Args:
         hand_landmarks: The hand landmarks detected by MediaPipe.
@@ -75,3 +75,23 @@ def is_peace_sign(hand_landmarks):
         hand_landmarks.landmark[pinky_finger_tip].y > hand_landmarks.landmark[pinky_finger_pip].y:
         return True
     return False
+
+def classify_hand_gesture(hand_landmarks):
+    """
+    Classify the hand gesture based on the detected hand landmarks.
+
+    Args:
+        hand_landmarks: The hand landmarks detected by MediaPipe.
+
+    Returns:
+        A string representing the classified hand gesture.
+    """
+    if is_open_hand(hand_landmarks):
+        return "Open Hand"
+    elif is_zero(hand_landmarks):
+        return "Zero"
+    elif is_peace_sign(hand_landmarks):
+        return "Peace Sign"
+    else:
+        return "Unknown Gesture"
+
