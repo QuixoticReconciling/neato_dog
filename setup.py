@@ -28,7 +28,9 @@ setup(
             'sit = neato_dog.sit:main',
             'YOLO_fetch = neato_dog.YOLO_fetch:main',
             'spin = neato_dog.spin:main',
-            'finite_state_machine = neato_dog.finite_state_machine:main'
+            'finite_state_machine = neato_dog.finite_state_machine:main',
+            'take_pictures = neato_dog.take_pictures:main',
+            'neato_cam_calibration = neato_dog.neato_cam_calibration:main'
         ],
     },
 )
