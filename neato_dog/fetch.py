@@ -5,9 +5,7 @@ import time
 import numpy as np
 import cv2
 import rclpy
-import cv_bridge
 
-from ultralytics import YOLO
 from threading import Thread, Event
 from cv_bridge import CvBridge
 from rclpy.node import Node
@@ -31,13 +29,11 @@ class Fetch(Node):
         self.cv_image = None                        # the latest image from the camera
         self.bridge = CvBridge()                    # used to convert ROS messages to OpenCV
         self.binary_image = None
-        self.model = YOLO("neato_dog/YOLO_model/best.pt")
 
         self.shape_found = Event()
 
         self.create_subscription(Image, image_topic, self.process_image, 10)
         self.vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
-        self.img_pub = self.create_publisher(Image, "ultralytics/detection/image", 5)
 
         # Initialize attributes for the center of the ball
         self.center_x = 0.
@@ -54,13 +50,6 @@ class Fetch(Node):
 
         thread = Thread(target=self.loop_wrapper)
         thread.start()
-
-    def callback(self, message):
-        """Publish the annotated camera frame. From Ulytralytics ROS 
-        quickstart guide: https://docs.ultralytics.com/guides/ros-quickstart"""
-        image = self.bridge.imgmsg_to_cv2(message, desired_encoding="bgr8")
-        annotated = self.model(image)[0].plot(show=False)
-        self.img_pub.publish(self.bridge.cv2_to_imgmsg(annotated, encoding="bgr8"))
 
     def process_image(self, msg):
         """ Process image messages from ROS and stash them in an attribute
