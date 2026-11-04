@@ -45,7 +45,7 @@ def is_zero(hand_landmarks):
     thumb_tip_y = hand_landmarks.landmark[thumb_tip].y
     middle_finger_tip_y = hand_landmarks.landmark[middle_finger_tip].y
 
-    if abs(thumb_tip_y-middle_finger_tip_y) < 0.03:
+    if abs(thumb_tip_y-middle_finger_tip_y) < 0.07: #threshold for how close the thumb and middle finger tips are
         return True
     return False
 
