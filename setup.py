@@ -30,7 +30,9 @@ setup(
             'spin = neato_dog.spin:main',
             'finite_state_machine = neato_dog.finite_state_machine:main',
             'take_pictures = neato_dog.take_pictures:main',
-            'neato_cam_calibration = neato_dog.neato_cam_calibration:main'
+            'neato_cam_calibration = neato_dog.neato_cam_calibration:main',
+            'gesture_node = neato_dog.gesture_node:main',
+            'hand_gestures = neato_dog.hand_gestures:main'
         ],
     },
 )

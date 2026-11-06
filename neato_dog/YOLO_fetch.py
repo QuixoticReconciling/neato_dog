@@ -26,17 +26,20 @@ class Fetch(Node):
         The node will issue motor commands to move forward while keeping
         the ball in the center of the camera's field of view. """
 
-    def __init__(self, image_topic):
+    def __init__(self, image):
         """ Initialize the ball tracker """
         super().__init__('fetch')
         self.cv_image = None                        # the latest image from the camera
         self.bridge = CvBridge()                    # used to convert ROS messages to OpenCV
         self.final = None
-        self.model = YOLO("neato_dog/YOLO_model/best.pt")
+        self.model = YOLO(os.path.expanduser("~/ros2_ws/src/neato_dog/neato_dog/YOLO_model/best.pt"))
 
+        self.state_active = False
+
+        
         self.shape_found = Event()
 
-        self.create_subscription(Image, "/camera/image_raw", self.callback, qos_profile_sensor_data)
+        self.create_subscription(Image, image, self.callback, qos_profile_sensor_data)
         self.vel_pub = self.create_publisher(Twist, 'cmd_vel', 10)
         self.img_pub = self.create_publisher(Image, "ultralytics/detection/image", 5)
 
@@ -46,7 +49,7 @@ class Fetch(Node):
 
         self.norm_x_pose = 0.0
 
-        thread = Thread(target=self.loop_wrapper)
+        thread = Thread(target=self.loop_wrapper, daemon=True)
         thread.start()
 
     def callback(self, message):
@@ -73,13 +76,12 @@ class Fetch(Node):
         """ This function takes care of calling the run_loop function repeatedly.
             We are using a separate thread to run the loop_wrapper to work around
             issues with single threaded executors in ROS2 """
-        print("loop wrapper started")
-        cv2.namedWindow('video_window')
-        print("window created")
+        # print("loop wrapper started")
 
 
         while True:
-            self.run_loop()
+            if self.state_active:
+                self.run_loop()
 
             time.sleep(0.1)
 
@@ -91,10 +93,10 @@ class Fetch(Node):
 
     def run_loop(self):
         """ Main loop for processing images and controlling the Neato through the CV interface."""
-        if self.final is None:
+        if not self.state_active:
             return
         
-        print(f"run_loop: cv_image None? {self.cv_image is None}, final None? {self.final is None}")
+        #print(f"run_loop: cv_image None? {self.cv_image is None}, final None? {self.final is None}")
         # NOTE: only do cv2.imshow and cv2.waitKey in this function 
             # computes the moments of the binary image and use them to find the center of the ball
         if  self.shape_found.is_set():
@@ -103,10 +105,7 @@ class Fetch(Node):
         else:
             self.drive(linear= 0.0, angular = 0.3)
 
-        print(f"final: type={type(self.final)}, shape={getattr(self.final, 'shape', None)}, dtype={getattr(self.final, 'dtype', None)}")
-
-        cv2.imshow('video_window', self.final)
-        cv2.waitKey(5)
+        #print(f"final: type={type(self.final)}, shape={getattr(self.final, 'shape', None)}, dtype={getattr(self.final, 'dtype', None)}")
 
 def main(args=None):
     rclpy.init()

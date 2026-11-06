@@ -8,9 +8,12 @@ from sensor_msgs.msg import Image
 from rclpy.node import Node
 from std_msgs.msg import String
 from threading import Thread
+from rclpy.executors import MultiThreadedExecutor
 
-from hand_gestures import classify_hand_gesture
-
+from neato_dog import hand_gestures
+from neato_dog.YOLO_fetch import Fetch
+from neato_dog.sit import sitNode
+from neato_dog.spin import SpinNode
 os.environ['QT_QPA_FONTDIR'] = '/usr/share/fonts/truetype/dejavu'
 
 mp_hands = mp.solutions.hands
@@ -23,6 +26,11 @@ class GestureDetector(Node):
         super().__init__('gesture_detector')
         self.cv_image = None #latest image from the camera
         self.bridge = CvBridge() #used to convert ROS messages to OpenCV 
+
+        self.sit = sitNode()
+        self.spin = SpinNode()
+        self.fetch = Fetch(image_topic)
+
  
         self.create_subscription(Image, image_topic, self.process_image, 10)
         self.gesture_pub = self.create_publisher(String, 'gesture', 10)
@@ -57,21 +65,49 @@ class GestureDetector(Node):
         if results.multi_hand_landmarks:
             hand = results.multi_hand_landmarks[0]
             mp_drawing.draw_landmarks(frame, hand, mp_hands.HAND_CONNECTIONS)
-            gesture = classify_hand_gesture(hand)
+            gesture = hand_gestures.classify_hand_gesture(hand)
  
-        self.gesture_pub.publish(String(data=gesture))
+        self.controller(gesture)
  
         color = (0, 200, 0) if gesture != "none" else (0, 0, 255)
         cv2.putText(frame, gesture, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.1, color, 3)
         cv2.imshow('gesture_window', frame)
+        fetch_frame = self.fetch.final #access frame from behavior node to draw annoted boxes
+        if self.fetch.state_active and fetch_frame is not None:
+            cv2.imshow('fetch_window', fetch_frame)
         cv2.waitKey(5)
+
+    def controller(self, command):
+        match command:
+            case "Open Hand":
+                self.fetch.state_active = False
+                self.spin.state_active = False
+                self.sit.state_active = True
+            case "Zero":
+                self.sit.state_active = False
+                self.fetch.state_active = False
+                self.spin.state_active = True
+            case "Peace Sign":
+                self.sit.state_active = False
+                self.spin.state_active = False
+                self.fetch.state_active = True
+            
+
  
  
 def main(args=None):
     rclpy.init(args=args)
     node = GestureDetector("camera/image_raw")
-    rclpy.spin(node)
-    rclpy.shutdown()
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+    executor.add_node(node.fetch)
+    executor.add_node(node.sit)
+    executor.add_node(node.spin)
+    try:
+        executor.spin()
+    finally:
+        rclpy.shutdown()
+    cv2.destroyAllWindows()
  
  
 if __name__ == '__main__':
