@@ -103,7 +103,7 @@ class Fetch(Node):
             self.drive(linear=0.1, angular = -self.norm_x_pose)
 
         else:
-            self.drive(linear= 0.0, angular = 0.3)
+            self.drive(linear= 0.0, angular = 0.1)
 
         #print(f"final: type={type(self.final)}, shape={getattr(self.final, 'shape', None)}, dtype={getattr(self.final, 'dtype', None)}")
 
