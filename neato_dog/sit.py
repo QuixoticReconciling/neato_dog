@@ -1,8 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
 from geometry_msgs.msg import Twist
-from sensor_msgs.msg import Image
 import time
 class sitNode(Node):
     '''
@@ -54,16 +52,7 @@ class sitNode(Node):
         vel.linear.x = linear
         vel.angular.z = angular 
         self.publisher.publish(vel)
-        
-    def drive_forward(self, distance):
-        forward_vel = -0.3
-        self.drive(linear = forward_vel, angular = 0.0)
-        
-        duration = distance / forward_vel
-        
-        self.drive(linear = 0.0, angular = 0.0)
-       
-            
+                 
 def main(args=None):
     """Initialize our node, run it, cleanup on shut down"""
     rclpy.init(args=args)  # Initialize ROS2 network

@@ -3,15 +3,12 @@ from rclpy.node import Node
 from time import sleep 
 from geometry_msgs.msg import Twist 
 import math 
-from std_msgs.msg import String
 from nav_msgs.msg import Odometry
-from neato2_interfaces.msg import Bump
 from threading import Thread, Event
 from tf_transformations import euler_from_quaternion 
-import cv2
+
+
 # code format taken from robo-behaviors drive square 
-
-
 class SpinNode(Node):
     
     def __init__(self):
@@ -82,53 +79,7 @@ class SpinNode(Node):
         vel.linear.x = linear
         vel.angular.z = angular 
         self.publisher.publish(vel)
-    
-    '''    
-    def drive_forward(self, distance):
-        forward_vel = 0.3
-        
-        
-        start_x = self.x
-        start_y = self.y
-        
-        # drive forward until distance traveled >= target distance
-        while rclpy.ok():
-            dist_traveled = math.sqrt((self.x - start_x)**2 + (self.y - start_y)**2)
-            if dist_traveled >= distance:
-                break
-            self.drive(linear=forward_vel, angular=0.0)
-            rclpy.spin_once(self, timeout_sec=0.05)
-        
-        self.drive(linear = 0.0, angular = 0.0)
-        
-    def turn_left(self):
-        angular_vel = 0.3
-        target_angle = 2 * math.pi  
-        start_yaw = self.yaw
-        
-        # turn until angle traveled >= target angle
-        while rclpy.ok():
-            angle_turned = math.atan2(math.sin(self.yaw - start_yaw), math.cos(self.yaw - start_yaw))
-            if angle_turned >= target_angle:
-                break
-            self.drive(linear=0.0, angular=angular_vel)
-            rclpy.spin_once(self, timeout_sec=0.05)
-            
-        self.drive(linear=0.0, angular=0.0)
-    '''
 
-    '''
-    def switch_state(self, msg):
-        yum = String()
-        if msg.data == 'fetch':
-            yum.data = 'fetch'
-        elif msg.data == 'sit':
-            yum.data = 'sit'
-        self.state_pub.publish(yum)
-        self.state_active = False
-        print('state switched to x')
-    '''
-        
 def main(args=None):
     """Initialize our node, run it, cleanup on shut down"""
     rclpy.init(args=args)  # Initialize ROS2 network
