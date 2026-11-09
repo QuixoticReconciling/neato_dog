@@ -29,7 +29,7 @@ class GestureDetector(Node):
 
         self.sit = sitNode()
         self.spin = SpinNode()
-        self.fetch = Fetch(image_topic)
+        self.fetch = Fetch()
 
  
         self.create_subscription(Image, image_topic, self.process_image, 10)
@@ -45,6 +45,7 @@ class GestureDetector(Node):
     def process_image(self, msg):
         """Stash the latest camera image as an OpenCV (BGR) image."""
         self.cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        self.fetch.cv_image = self.cv_image
  
     def loop_wrapper(self):
         """Runs the processing loop in its own thread"""
