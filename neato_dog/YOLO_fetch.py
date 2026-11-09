@@ -1,5 +1,4 @@
-"""A script for driving a Neato towards an object of a particular color. 
-Color is specified by a user setting color filtering thresholds."""
+"""A script that makes a neato search and 'fetch' for an expo marker."""
 import os
 import numpy as np
 import cv2

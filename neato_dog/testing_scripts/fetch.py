@@ -2,7 +2,6 @@
 Color is specified by a user setting color filtering thresholds."""
 import os
 import time
-import numpy as np
 import cv2
 import rclpy
 
@@ -48,14 +47,15 @@ class Fetch(Node):
 
         self.norm_x_pose = 0.0
 
+        # Creates a thread to control whether a shape is found or not.
         thread = Thread(target=self.loop_wrapper)
         thread.start()
 
     def process_image(self, msg):
-        """ Process image messages from ROS and stash them in an attribute
-            called cv_image for subsequent processing """
+        """ Process image messages from ROS and  process them to find the desired colored object"""
         self.cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
+        # For the hues within the color thresholds, the binary image turns them white
         self.binary_image = cv2.inRange(
             self.cv_image, 
             (self.blue_lower_bound, self.green_lower_bound, self.red_lower_bound), 
@@ -64,11 +64,13 @@ class Fetch(Node):
 
         moments = cv2.moments(self.binary_image, binaryImage=True)
         # 'm00' represents all points, 'm10' represents all x points 'm01' represents all y points
+        # If there is white, it goes into fetch mode
         if moments['m00'] != 0:
             self.center_x, self.center_y = moments['m10']/moments['m00'], moments['m01']/moments['m00']
             self.norm_x_pose = (self.center_x - self.cv_image.shape[1]/2) / self.cv_image.shape[1]
             self.shape_found.set()
         else:
+            #Otherwise it executes its search.
             self.shape_found.clear()
 
     def loop_wrapper(self):
@@ -83,22 +85,8 @@ class Fetch(Node):
 
             time.sleep(0.1)
 
-    # def process_mouse_event(self, event, x,y,flags,param):
-    #     """ Process mouse events to control when the Neato should move."""
-
-    #     # click event for controlling whether the Neato should move or not
-    #     # if event == cv2.EVENT_LBUTTONDOWN:
-    #     #     self.should_move = not(self.should_move)
-
-    # def search(self): # How do I make drive continously
-    #     angular_vel = 0.3
-
-    #     if not self.shape_found.is_set():
-    #         self.drive(linear = 0.0, angluar = angular_vel)
-    #         sleep(5)
-    #         self.drive(linear = 0.0, angular = 0.0)
-
     def drive(self, linear, angular):
+        """Simple function that allows the neato to drive at any angular or linear velocity."""
         msg = Twist()
         msg.linear.x = linear
         msg.angular.z = angular
@@ -109,10 +97,12 @@ class Fetch(Node):
         # NOTE: only do cv2.imshow and cv2.waitKey in this function 
         if self.cv_image is None or self.binary_image is None:
             return
-            # computes the moments of the binary image and use them to find the center of the ball
+        
+        # Drives in the direction of the color.
         if  self.shape_found.is_set():
             self.drive(linear=0.1, angular = -self.norm_x_pose)
 
+        # Drives in a circle trying to find the desired color
         else:
             self.drive(linear= 0.0, angular = 0.3)
 
