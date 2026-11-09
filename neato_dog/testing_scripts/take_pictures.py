@@ -1,38 +1,29 @@
-"""A script for driving a Neato towards an object of a particular color. 
-Color is specified by a user setting color filtering thresholds."""
+"""A script where the neato takes pictures."""
 import os
-import time
-import numpy as np
 import cv2
 import rclpy
 
-from threading import Thread, Event
 from cv_bridge import CvBridge
 from rclpy.node import Node
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import Twist
-from std_msgs.msg import Bool
-from time import sleep
 
 # Points the computer to local fonts for the QT GUI that OpenCV will produce.
 os.environ['QT_QPA_FONTDIR'] = '/usr/share/fonts/truetype/dejavu'
 
-class Fetch(Node):
+class Snap(Node):
     """ The BallTracker is a Python object that encompasses a ROS node 
         that can process images from the camera and search for a ball within.
         The node will issue motor commands to move forward while keeping
         the ball in the center of the camera's field of view. """
 
     def __init__(self, image_topic):
-        """ Initialize the ball tracker """
-        super().__init__('fetch')
+        """ Initialize the node """
+        super().__init__('snap')
         self.cv_image = None                        # the latest image from the camera
         self.bridge = CvBridge()                    # used to convert ROS messages to OpenCV
 
-        self.create_subscription(Image, image_topic, self.process_image, 10)
-
-        thread = Thread(target=self.loop_wrapper)
-        thread.start()
+        self.create_subscription(Image, image_topic, self.process_image, 10)    # Subscribe to the image
+        self.create_timer(0.05, self.run_loop)
 
         self.count = 0
 
@@ -41,28 +32,19 @@ class Fetch(Node):
             called cv_image for subsequent processing """
         self.cv_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
-    def loop_wrapper(self):
-        """ This function takes care of calling the run_loop function repeatedly.
-            We are using a separate thread to run the loop_wrapper to work around
-            issues with single threaded executors in ROS2 """
-        cv2.namedWindow('video_window')
-
-        while True:
-            self.run_loop()
-
-            time.sleep(0.1)
-
     def run_loop(self):
-        """ Main loop for processing images and controlling the Neato through the CV interface."""
-        # NOTE: only do cv2.imshow and cv2.waitKey in this function 
+        """ Main loop for taking pictures and saving them in the calibration photos folder."""
         if self.cv_image is None:
             return
 
+        # Create a copy of the frame to write with
         frame = self.cv_image.copy()
 
         cv2.imshow('video_window', self.cv_image)
 
+        # The key to take a snapshot is 's'
         if cv2.waitKey(5) & 0xFF == ord('s'):
+            # A path to write to
             path = (f"/home/trevor/ros2_ws/src/neato_dog/neato_dog/calibration_photos/photo_{self.count}.jpg")
             cv2.imwrite(path, frame)
             if cv2.imwrite(path, frame):
@@ -76,7 +58,7 @@ class Fetch(Node):
 
 def main(args=None):
     rclpy.init()
-    n = Fetch("camera/image_raw") # Change depending on if your using gazebo or real neato
+    n = Snap("camera/image_raw")
     rclpy.spin(n)
     rclpy.shutdown()
 

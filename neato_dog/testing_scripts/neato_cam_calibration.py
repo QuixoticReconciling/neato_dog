@@ -1,3 +1,6 @@
+"""This calibration is taken from the Day 15 activity and uses the code provided in
+this OpenCV Python tutorial. https://docs.opencv.org/4.13.0/dc/dbb/tutorial_py_calibration.html"""
+
 import numpy as np
 import cv2 as cv
 import glob
@@ -53,7 +56,7 @@ dst = cv.undistort(img, mtx, dist, None, newcameramtx)
 # crop the image
 x, y, w, h = roi
 dst = dst[y:y+h, x:x+w]
-cv.imwrite('/home/trevor/ros2_ws/src/neato_dog/neato_dog/calibration_photos/photo_12.jpg', dst)
+cv.imwrite('/home/trevor/ros2_ws/src/neato_dog/neato_dog/calibration_photos/calibration_result.jpg', dst)
 
 
 
