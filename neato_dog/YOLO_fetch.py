@@ -96,7 +96,7 @@ class Fetch(Node):
 
         if len(result.boxes) == 0: #YOLO finds nothing in frame
             self.final = frame
-            self.drive(linear = 0.0, angular = 0.1)
+            self.drive(linear = 0.0, angular = 0.3)
         else:
             x_center = float(result.boxes.xywh[0][0]) #boxes gives a tensor. Must convert to python number
             self.norm_x_pose = (x_center - self.cv_image.shape[1]/2) / self.cv_image.shape[1]
@@ -104,7 +104,6 @@ class Fetch(Node):
             self.drive(linear = 0.1, angular = -self.norm_x_pose)
 
         self.img_pub.publish(self.bridge.cv2_to_imgmsg(self.final, encoding="bgr8"))
-        #print(f"final: type={type(self.final)}, shape={getattr(self.final, 'shape', None)}, dtype={getattr(self.final, 'dtype', None)}")
 
 def main(args=None):
     rclpy.init()

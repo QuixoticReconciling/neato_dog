@@ -67,7 +67,7 @@ class SpinNode(Node):
         
         if self.total_turned < 2 * math.pi:
             # Keep turning
-            self.drive(linear=0.0, angular=0.3)
+            self.drive(linear=0.0, angular=0.7)
         else:
             # Stop and finish action
             self.drive(linear=0.0, angular=0.0)
