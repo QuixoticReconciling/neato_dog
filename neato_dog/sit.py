@@ -22,32 +22,49 @@ class sitNode(Node):
         self.start_time = 0.0
             
     def run_loop(self):
+        '''
+        Time-based loop for executing the sit sequence. Sequence is broken
+        down into two steps: 0 (sit) and 1 (back up).
+        '''
         
+        # stop the loop if the state isn't active
         if not self.state_active:
             return
 
+        # get current time and calculate elapsed time
         current_time = time.time()
         elapsed = current_time - self.start_time
 
+
+        # break motion down into two steps
+        # sit is step 0, back up is step 1
         if self.sit_step == 0:
-            # Step 0: Stop briefly before backing up
+            # stop for 0.5 seconds
             self.drive(linear=0.0, angular=0.0)
             if elapsed > 0.5:
-                self.sit_step = 1
-                self.start_time = time.time()
+                self.sit_step = 1 # switch to step 1
+                self.start_time = time.time() # reset the time
                 
         elif self.sit_step == 1:
-            # Step 1: Drive backward for the calculated duration
+            # drive backwards for 2 seconds
             self.drive(linear=-0.3, angular=0.0)
-            if elapsed > 2.67:
-                # Maneuver completed: stop and reset state locally
+            if elapsed > 2:
+                # stop 
                 self.drive(linear=0.0, angular=0.0)
                 self.get_logger().info("Sit sequence completed")
-                self.state_active = False  # <--- Fixes the trapped state
-                self.sit_step = 0
+                self.state_active = False  # reset state to inactive
+                self.sit_step = 0 # reset step to 0
                 
         
     def drive(self, linear, angular):
+        '''
+        Creates and publishes a twist velocity message to the 'cmd_vel' topic.
+        
+        Args:
+            linear (float): linear velocity(meters/second).
+            angular (float): angular velocity (radians/second).
+        '''
+        
         vel = Twist()
         vel.linear.x = linear
         vel.angular.z = angular 

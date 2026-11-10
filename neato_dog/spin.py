@@ -13,9 +13,6 @@ class SpinNode(Node):
     
     def __init__(self):
         super().__init__("spin")
-        # not sure why drive square1 works while drive square does not
-        # prob bc smth with the cache
-
         self.state_active = False
         self.start_yaw = None
 
@@ -31,11 +28,18 @@ class SpinNode(Node):
         self.create_timer(0.1, self.run_loop)
 
     def odom_callback(self, msg):
+        '''
+        Callback function for odometry messages.
+
+        Args:
+            msg (odometry): odometry message.
+        '''
+        
         # receive messages from odom topic
         self.x = msg.pose.pose.position.x
         self.y = msg.pose.pose.position.y
         orientation_q = msg.pose.pose.orientation 
-        # convert to rads
+        # convert to radians
         orientation_list = [orientation_q.x, orientation_q.y, orientation_q.z, orientation_q.w]
         _, _, self.yaw = euler_from_quaternion(orientation_list)
         # give the ready signal
@@ -43,30 +47,41 @@ class SpinNode(Node):
 
     def run_loop(self):
         
-        # used gemini to help combine functions
+        '''
+        Runs the spin loop.
+
+        This function handles the logic for spinning the robot 360 degrees based on odometry feedback.
+        It calculates the total angle turned (yaw) and publishes the appropriate velocity commands.
+        '''
+        
+        # stop the loop if the state isn't active
         if not self.state_active:
             return
             self.yaw = 0.0 #If it gets interrupted it gets set to 0
-            self.total_turned
-
+            self.total_turned = 0.0
+            
+        # stop the loop if the odom is not ready
         if not self.odom_ready:
             self.get_logger().info("Waiting for odometry data...")
             return
 
-        # Initialize start yaw on the first tick of the active state
+        # initialize the start yaw on the first tick of the active state
         if self.start_yaw is None:
             self.get_logger().info('Starting 360 spin')
             self.start_yaw = self.yaw
 
-        # Calculate angle turned non-blockingly
+        # calculate angle turned
         self.total_turned += math.atan2(math.sin(self.yaw - self.start_yaw), math.cos(self.yaw - self.start_yaw))
-        self.start_yaw = self.yaw
+        # update the start yaw
+        self.start_yaw = self.yaw 
         
+        # check if the total angle turned is less than 360 degrees
         if self.total_turned < 2 * math.pi:
-            # Keep turning
+            # if yes, keep turning
             self.drive(linear=0.0, angular=0.7)
         else:
-            # Stop and finish action
+            # if not, the motion is complete
+            # set velocities to 0, reset yaw, and set state to inactive
             self.drive(linear=0.0, angular=0.0)
             self.get_logger().info("360 spin completed")
             self.start_yaw = None
@@ -75,6 +90,13 @@ class SpinNode(Node):
 
             
     def drive(self, linear, angular):
+        '''
+        Creates and publishes a twist velocity message to the 'cmd_vel' topic.
+                
+        Args:
+            linear (float): linear velocity(meters/second).
+            angular (float): angular velocity (radians/second).
+        '''
         vel = Twist()
         vel.linear.x = linear
         vel.angular.z = angular 
