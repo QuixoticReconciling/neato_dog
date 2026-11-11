@@ -170,7 +170,7 @@ Then, navigate to the right file location and run the ros bag. Here, we're only 
 cd ~/ros2_ws/src/neato_dog
 ros2 bag play neato_dog_demo --topics /cmd_vel
 ```
-[Click here for to see video](https://drive.google.com/file/d/1MKL_bKD-_mTbzabMfqgFPULfruPKo5GX/view?usp=sharing)
+[Click here to see video](https://drive.google.com/file/d/1MKL_bKD-_mTbzabMfqgFPULfruPKo5GX/view?usp=sharing)
 
 ## Future Implementations
 If we had more time, we would have liked to implement the stretch goal from our original proposal. Our goal was to have our D.A.W.G. follow a person. This would happen after the robot successfully finds and "picks up" the object it was trying to fetch. It would then search for the nearest person and follow them.
