@@ -20,7 +20,7 @@ mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
 
 class GestureDetector(Node):
-    """Subscribes to the camera, detects hand gestures, and publishes them."""
+    """Subscribes to the camera and detects hand gestures and calls the behavior node based on the gesture detected."""
  
     def __init__(self, image_topic):
         super().__init__('gesture_detector')
@@ -33,7 +33,6 @@ class GestureDetector(Node):
 
  
         self.create_subscription(Image, image_topic, self.process_image, 10)
-        self.gesture_pub = self.create_publisher(String, 'gesture', 10)
  
         self.hands = mp_hands.Hands(max_num_hands=1,
                                     min_detection_confidence=0.6,

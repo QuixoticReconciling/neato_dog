@@ -1,3 +1,6 @@
+"""
+Uses the MediaPipe library to detect hand gestures from a webcam feed
+"""
 import cv2
 import mediapipe as mp
 from hand_gestures import classify_hand_gesture
