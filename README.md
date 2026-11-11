@@ -67,7 +67,7 @@ Once the counter has reached the $2\pi$ limit, the neato has completed the full 
 The last of our behaviors is fetch. The act of "fetching" for our D.A.W.G. is split up into two steps: searching and following. The searching step consists of the neato finding its toy. The "toy" we gave to our D.A.W.G. was a red expo marker. We chose a red expo marker since we figured it had a high amount of contrast that would be easy for the robot to detect. Given there is no red expo marker dataset, we decided to train our own custom model.
 
 ### YOLO 26 Custom dataset
-Through researching, we found a helpful ![colab notebook](https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-yolo26-object-detection-on-custom-dataset.ipynb#scrollTo=D2YkphuiaE7_) that gave us all the commands we needed to train our own dataset. Our dataset includes 414 images, 16 of which do not include an expo marker. This helps teach the model what it looks like when the object is not there. We then used a 85-9-6 percent split for the training, validation, and testing of our images. Additionally, we resized the image sizes down to $640\times 640\text{ px}$.
+Through researching, we found a helpful [colab notebook](https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-yolo26-object-detection-on-custom-dataset.ipynb#scrollTo=D2YkphuiaE7_) that gave us all the commands we needed to train our own dataset. Our dataset includes 414 images, 16 of which do not include an expo marker. This helps teach the model what it looks like when the object is not there. We then used a 85-9-6 percent split for the training, validation, and testing of our images. Additionally, we resized the image sizes down to $640\times 640\text{ px}$.
 
 ![yolo diagram](neato_dog/images/Screenshot%20from%202026-11-09%2011-21-32.png)
 
@@ -104,7 +104,7 @@ self.norm_x_pose = (self.center_x - self.cv_image.shape[1]/2) / self.cv_image.sh
 The angular velocity is then set to the negative of `self.norm_x_pose`. It is set as the negative because the `norm_x_pose` on the right side of the image will always be positive, but for the D.A.W.G to move in that position, the angular velocity has to be negative.
 
 ### Marker Detection
-To confirm that our custom object detection dataset works, we created a script that works with our laptop's webcam. Ultralytics has a lot of great documentation on how to do Object Detection with Ultralytics.
+To confirm that our custom object detection dataset works, we created a script that works with our laptop's webcam. Ultralytics has a lot of great documentation on how to do [Object Detection with Ultralytics](https://docs.ultralytics.com/tasks/detect).
 
 The implementation was pretty simple. To access the image, we have to use OpenCV's "read()" method. This has two outputs. The first is a boolean that tells us whether we've retrieved the image successfully or not. The second is the image frame itself. To detect, we must first run the model:
 
@@ -125,7 +125,7 @@ We then tell OpenCV to show our new annotated_frame, creating a bounding box.
 ![box diagram](neato_dog/images/Screenshot%20from%202026-11-09%2014-27-14.png)
 
 ### Implementation
-Now we're at the actual fun part of the fetch behavior! We also found the Ultralytics documentation to be super helpful thanks to a YOLO with ROS Quickstart Guide. The most helpful method from this documentation was CvBridge. This allowed us to take a ROS message from the D.A.W.G camera and turn it into an OpenCV/Numpy array that YOLO could use, and then convert that back into a ROS image message that we can publish.
+Now we're at the actual fun part of the fetch behavior! We also found the Ultralytics documentation to be super helpful thanks to a [YOLO with ROS Quickstart Guide](https://docs.ultralytics.com/guides/ros-quickstart). The most helpful method from this documentation was CvBridge. This allowed us to take a ROS message from the D.A.W.G camera and turn it into an OpenCV/Numpy array that YOLO could use, and then convert that back into a ROS image message that we can publish.
 
 ```python
 self.cv_image = self.bridge.imgmsg_to_cv2(message, desired_encoding="bgr8")
