@@ -56,7 +56,7 @@ Once the counter has reached the $2\pi$ limit, the neato has completed the full 
 The last of our behaviors is fetch. The act of "fetching" for our D.A.W.G. is split up into two steps: searching and following. The searching step consists of the neato finding its toy. The "toy" we gave to our D.A.W.G. was a red expo marker. We chose a red expo marker since we figured it had a high amount of contrast that would be easy for the robot to detect. Given there is no red expo marker dataset, we decided to train our own custom model.
 
 ### YOLO 26 Custom dataset
-Through researching, we found a helpful colab notebook that gave us all the commands we needed to train our own dataset. Our dataset includes 414 images, 16 of which do not include an expo marker. This helps teach the model what it looks like when the object is not there. We then used a 85-9-6 percent split for the training, validation, and testing of our images. Additionally, we resized the image sizes down to $640\times 640\text{ px}$.
+Through researching, we found a helpful [colab notebook](https://colab.research.google.com/github/roboflow-ai/notebooks/blob/main/notebooks/train-yolo26-object-detection-on-custom-dataset.ipynb#scrollTo=D2YkphuiaE7_) that gave us all the commands we needed to train our own dataset. Our dataset includes 414 images, 16 of which do not include an expo marker. This helps teach the model what it looks like when the object is not there. We then used a 85-9-6 percent split for the training, validation, and testing of our images. Additionally, we resized the image sizes down to $640\times 640\text{ px}$.
 
 These images were imported into roboflow, allowing us to create bounding boxes for each image that would be added to the dataset before we trained it.
 
