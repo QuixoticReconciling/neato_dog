@@ -12,7 +12,7 @@ The Neato Dynamic Autonomous Walker with Gestures (D.A.W.G) is an obedient neato
 ## Architecture Overview
 Our project implements a control node, gesture node, and three behavioral nodes: spin, sit, and fetch. Below is a diagram of our finite state machine showcasing how these nodes interact with each other.
 
-![Hand landmarks diagram](neato_dog/images/Screenshot from 2026-11-10 20-59-09.png)
+![Hand landmarks diagram](images/Screenshot from 2026-11-10 20-59-09.png)
 
 Our D.A.W.G.'s initial state is set to idle. From there, it can process three hand gestures and perform the three commands outlined above. If a new command is given while it is in the process of executing another command, it will run the new command given. Once it completes the command, it returns to the idle state. Notably, the fetch behavior doesn't return to its idle state. If it is fetching and it is unable to find an object, it will continue searching until it finds one, or a new command is given.
 
